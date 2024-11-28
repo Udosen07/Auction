@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @font-face {
+  font-family: "TechnaSans-Regular";
+  src: url("./assets/fonts/TechnaSans-Regular.otf") format("opentype");
+  font-display: swap;
+} */
+
+/* body {
+  font-family: "TechnaSans-Regular", sans-serif; 
+} */

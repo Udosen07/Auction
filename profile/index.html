@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="Profile page"
+      content="This is where the profiles are located"
+    />
+    <script
+      src="https://kit.fontawesome.com/3d70b51120.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="../../src/style.css" />
+    <title>Profile</title>
+  </head>
+  <body>
+    <p class="text-left pl-5 text-[18px] mt-5">
+      <a href="/"><i class="fa-solid fa-chevron-left"></i> Home </a>
+    </p>
+    <div
+      class="bg-[#f4f4f4] text-[#333] flex justify-center items-center h-[100vh]"
+    >
+      <div class="bg-white rounded-[10px] shadow-md p-5 w-[400px] text-center">
+        <h1 class="text-lg text-gray-800 mt-5">Profile</h1>
+        <div>
+          <div
+            class="my-5 mx-auto rounded-[50%] overflow-hidden w-[100px] h-[100px]"
+          >
+            <img
+              src="https://www.pngitem.com/pimgs/m/272-2720656_user-profile-dummy-hd-png-download.png"
+              alt="Profile Picture"
+              class="w-full h-full object-cover"
+              id="profilePic"
+            />
+          </div>
+          <div class="flex justify-around my-5">
+            <div class="text-center">
+              <p id="fpost">0</p>
+              <p>Credits</p>
+            </div>
+            <div class="text-center">
+              <p id="ffollowers">0</p>
+              <p>Listings</p>
+            </div>
+            <div class="text-center">
+              <p id="ffollowing">0</p>
+              <p>Wins</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-[24px] font-bold my-[10px]" id="name">Username</p>
+
+        <p class="text-[14px] text-[#666] my-[10px] mb-5" id="userbio">
+          This is the bio
+        </p>
+
+        <form
+          name="updateProfile"
+          id="updateProfileForm"
+          class="flex flex-col gap-2 mt-5"
+        >
+          <label for="avatar" class="font-bold text-left">Avatar:</label>
+          <input
+            type="text"
+            id="avatar"
+            name="avatar"
+            placeholder="image url"
+            class="p-2 border border-gray-300 rounded-md text-sm transition-colors duration-300 focus:border-blue-500 outline-none"
+          />
+
+          <label for="bio" class="font-bold text-left">Bio:</label>
+          <textarea
+            id="bio"
+            name="bio"
+            rows="4"
+            cols="50"
+            placeholder="Tell us about yourself..."
+            class="p-2 border border-gray-300 rounded-md text-sm transition-colors duration-300 focus:border-blue-500 outline-none"
+          ></textarea>
+
+          <button
+            type="submit"
+            class="bg-blue-500 text-white p-2 rounded-md text-base transition-colors duration-300 hover:bg-blue-700"
+          >
+            Update Profile
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script type="module" src="/src/ts/ui/profile/update.ts"></script>
+  </body>
+</html>

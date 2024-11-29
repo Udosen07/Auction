@@ -22,7 +22,8 @@ export function updatePaginationControls(
   readProfiles: (params: {
     limit: number;
     page: number;
-  }) => Promise<ApiResponse>, // API fetch function
+    [key: string]: any;
+  }) => Promise<ApiResponse>, // Generic API fetch function
   targetId: string, // ID of the target pagination container
   renderFunction: (posts: any[]) => void // Function to render the posts
 ): void {

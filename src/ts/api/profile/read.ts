@@ -44,7 +44,7 @@ export async function readProfiles({ limit, page }: Props) {
 export async function liveGridreadProfiles({ limit, page }: Props) {
   try {
     const response = await fetch(
-      `${API_AUCTION_POSTS}?sort=created&sortOrder=desc&_active =true&limit=${limit}&page=${page}`,
+      `${API_AUCTION_POSTS}?sort=created&sortOrder=desc&_active=true&limit=${limit}&page=${page}`,
       {
         method: "GET",
         headers: {
@@ -63,6 +63,39 @@ export async function liveGridreadProfiles({ limit, page }: Props) {
   } catch (error) {
     console.error("this error", error);
     return [];
+  }
+}
+
+export async function winGridreadProfiles({
+  name,
+  limit,
+  page,
+}: {
+  name: string;
+  limit: number;
+  page: number;
+}) {
+  try {
+    const response = await fetch(
+      `${API_AUCTION_PROFILE}/${name}/wins?limit=${limit}&page=${page}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "X-Noroff-API-Key": API_KEY,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch data");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching winning posts:", error);
+    return { data: [], meta: null }; // Return empty structure to avoid breaking rendering logic
   }
 }
 

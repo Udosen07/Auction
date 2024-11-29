@@ -198,8 +198,6 @@ placeBidBtn?.addEventListener("click", async () => {
     console.log("Response status:", response.status);
 
     if (response.ok) {
-      const updatedCredits = userCredits - bidAmount;
-      localStorage.setItem("credits", updatedCredits.toString());
       alert("Bid placed successfully!");
       hideModal();
 

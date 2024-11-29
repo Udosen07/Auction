@@ -1,14 +1,9 @@
-import {
-  API_AUCTION_POSTS,
-  API_AUCTION_PROFILE,
-  API_KEY,
-} from "./ts/api/constants";
 import { readProfiles, liveGridreadProfiles } from "./ts/api/profile/read";
+import { fetchCredits } from "./ts/api/utilities/fetchCredits";
+import { searchListings } from "./ts/api/utilities/search";
 import { renderPosts, liveGridrenderPosts } from "./ts/ui/post/postGrid";
 import { updatePaginationControls } from "./ts/utilities/Pagination";
-import { getToken } from "./ts/utilities/token";
 
-const token = getToken();
 document.addEventListener("DOMContentLoaded", () => {
   const currentPath = window.location.pathname;
   const links = document.querySelectorAll(".nav-link");
@@ -69,34 +64,17 @@ if (authButtonsContainer) {
     authButtonsContainer.appendChild(balanceDiv);
     authButtonsContainer.appendChild(logoutButton);
 
-    async function fetchCredits(username: string) {
+    async function updateUserCredits(username: string): Promise<void> {
       try {
-        // Get the token for authorization
-        const response = await fetch(`${API_AUCTION_PROFILE}/${username}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "X-Noroff-API-Key": API_KEY,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user profile");
-        }
-
-        const userProfile = await response.json();
-        const userCredits = userProfile.data.credits || 0; // Assume credits are in the profile
-
-        // Store and update credits
-        localStorage.setItem("credits", userCredits.toString());
-        balanceDiv.innerText = `$${userCredits}`;
+        const credits = await fetchCredits(username); // Call the fetchCredits function from api.ts
+        balanceDiv.innerText = `$${credits}`;
       } catch (error) {
-        console.error("Error fetching credits:", error);
-        balanceDiv.innerText = `$0`; // Default balance if error occurs
+        balanceDiv.innerText = "$0"; // Default balance if an error occurs
       }
     }
 
-    // Fetch credits on page load for the logged-in user
-    fetchCredits(name); // Pass the username to fetch the credits dynamically
+    // Fetch credits for the logged-in user
+    updateUserCredits(name); // Call with the actual username
   } else {
     // If not logged in, show login and register buttons
     const registerButton = document.createElement("a");
@@ -182,7 +160,7 @@ interface Listing {
 }
 
 /**
- * Fetch listings based on the search query
+ * Fetch listings based on the search query and render them
  * @param query - The search query
  */
 async function fetchSearchResults(query: string): Promise<void> {
@@ -190,18 +168,7 @@ async function fetchSearchResults(query: string): Promise<void> {
     // Show loading state
     mainBody.innerHTML = "<p>Loading...</p>";
 
-    const response = await fetch(`${API_AUCTION_POSTS}/search?q=${query}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        "X-Noroff-API-Key": API_KEY,
-      },
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch search results.");
-
-    const { data: listings }: { data: Listing[] } = await response.json();
+    const listings = await searchListings(query); // Call the separate API function
     renderSearchResults(listings);
   } catch (error) {
     console.error(error);
@@ -230,9 +197,7 @@ function renderSearchResults(listings: Listing[]): void {
               class="p-4 border rounded shadow cursor-pointer hover:shadow-lg transition-shadow duration-200"
               onclick="window.location.href = './post/?id=${listing.id}'"
             >
-              <img src="${listing.media[0]?.url}" alt="${
-              listing.media[0]?.alt
-            }" 
+              <img src="${listing.media[0]?.url}" alt="${listing.media[0]?.alt}"
                 class="w-full h-48 object-cover rounded mb-2">
               <h3 class="font-bold text-lg">${listing.title}</h3>
               <p class="text-sm mb-2">${listing.description}</p>
@@ -273,7 +238,7 @@ function addSearchListeners(
     const query = target.value.trim();
 
     clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(() => {
+    debounceTimeout = window.setTimeout(() => {
       if (query) {
         fetchSearchResults(query);
       } else {

@@ -16,11 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const href = link.getAttribute("href");
 
     if (href === currentPath) {
-      link.classList.add("border-black"); // Add black border for active link
-      link.classList.remove("border-transparent"); // Ensure no transparent border
+      link.classList.add("border-black"); // Active link style
+      link.classList.remove("border-transparent");
     } else {
-      link.classList.remove("border-black"); // Remove black border for non-active links
-      link.classList.add("border-transparent"); // Ensure transparent border for non-active links
+      link.classList.remove("border-black");
+      link.classList.add("border-transparent");
     }
   });
 });

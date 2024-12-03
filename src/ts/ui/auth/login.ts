@@ -1,36 +1,7 @@
 import { login } from "../../api/auth/login";
 
-const passwordInput = document.getElementById(
-  "password"
-) as HTMLInputElement | null;
-const togglePasswordButton = document.getElementById(
-  "toggle-password"
-) as HTMLElement | null;
-
-if (!passwordInput || !togglePasswordButton) {
-  throw new Error("Required elements not found in the DOM");
-}
-
-const toggleIcon = togglePasswordButton.querySelector("i")!;
-let isPasswordVisible = false;
-
-togglePasswordButton.addEventListener("click", function () {
-  isPasswordVisible = !isPasswordVisible;
-
-  if (isPasswordVisible) {
-    passwordInput.type = "text";
-    toggleIcon.classList.remove("fa-eye");
-    toggleIcon.classList.add("fa-eye-slash");
-    togglePasswordButton.setAttribute("aria-label", "Hide Password");
-  } else {
-    passwordInput.type = "password";
-    toggleIcon.classList.remove("fa-eye-slash");
-    toggleIcon.classList.add("fa-eye");
-    togglePasswordButton.setAttribute("aria-label", "Show Password");
-  }
-});
-
-export async function onLogin(event: SubmitEvent) {
+// Function to handle form login
+export async function onLogin(event: SubmitEvent): Promise<void> {
   event.preventDefault();
 
   const loginForm = event.target as HTMLFormElement;
@@ -48,10 +19,13 @@ export async function onLogin(event: SubmitEvent) {
     "button[type='submit']"
   ) as HTMLButtonElement;
 
-  if (!loadingSpinner || !errorMessage) {
-    throw new Error("Loading spinner or error message element not found");
+  // Ensure all required elements exist
+  if (!loadingSpinner || !errorMessage || !submitButton) {
+    console.error("Required elements are missing");
+    return;
   }
 
+  // Show loading spinner and disable the submit button
   loadingSpinner.style.display = "block";
   errorMessage.style.display = "none";
   submitButton.disabled = true;
@@ -80,16 +54,40 @@ export async function onLogin(event: SubmitEvent) {
 
     errorMessage.style.display = "block";
   } finally {
-    loadingSpinner.style.display = "none";
-    submitButton.disabled = false;
+    loadingSpinner.style.display = "none"; // Hide the loading spinner
+    submitButton.disabled = false; // Re-enable submit button
   }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const loginForm = document.querySelector(
-    "#loginForm"
-  ) as HTMLFormElement | null;
-  if (loginForm) {
-    loginForm.addEventListener("submit", onLogin);
+// Password visibility toggle logic
+export function initializePasswordToggle() {
+  const passwordInput = document.getElementById(
+    "password"
+  ) as HTMLInputElement | null;
+  const togglePasswordButton = document.getElementById(
+    "toggle-password"
+  ) as HTMLElement | null;
+
+  if (!passwordInput || !togglePasswordButton) {
+    throw new Error("Required elements not found in the DOM");
   }
-});
+
+  const toggleIcon = togglePasswordButton.querySelector("i")!;
+  let isPasswordVisible = false;
+
+  togglePasswordButton.addEventListener("click", function () {
+    isPasswordVisible = !isPasswordVisible;
+
+    if (isPasswordVisible) {
+      passwordInput.type = "text";
+      toggleIcon.classList.remove("fa-eye");
+      toggleIcon.classList.add("fa-eye-slash");
+      togglePasswordButton.setAttribute("aria-label", "Hide Password");
+    } else {
+      passwordInput.type = "password";
+      toggleIcon.classList.remove("fa-eye-slash");
+      toggleIcon.classList.add("fa-eye");
+      togglePasswordButton.setAttribute("aria-label", "Show Password");
+    }
+  });
+}

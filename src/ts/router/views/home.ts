@@ -1,28 +1,22 @@
-import "./style.css";
-import {
-  liveGridreadProfiles,
-  winGridreadProfiles,
-} from "./ts/api/profile/read";
-import { fetchCredits } from "./ts/api/utilities/fetchCredits";
-import { searchListings } from "./ts/api/utilities/search";
-import { liveGridrenderPosts, winGridrenderPosts } from "./ts/ui/post/postGrid";
-import { updatePaginationControls } from "./ts/utilities/Pagination";
+import { liveGridreadProfiles, readProfiles } from "../../api/profile/read";
+import { fetchCredits } from "../../api/utilities/fetchCredits";
+import { searchListings } from "../../api/utilities/search";
+import { liveGridrenderPosts, renderPosts } from "../../ui/post/postGrid";
+import { updatePaginationControls } from "../../utilities/Pagination";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const currentPath = window.location.pathname;
-  const links = document.querySelectorAll(".nav-link");
+const currentPath = window.location.pathname;
+const links = document.querySelectorAll(".nav-link");
 
-  links.forEach((link) => {
-    const href = link.getAttribute("href");
+links.forEach((link) => {
+  const href = link.getAttribute("href");
 
-    if (href === currentPath) {
-      link.classList.add("border-black"); // Active link style
-      link.classList.remove("border-transparent");
-    } else {
-      link.classList.remove("border-black");
-      link.classList.add("border-transparent");
-    }
-  });
+  if (href === currentPath) {
+    link.classList.add("border-black"); // Active link style
+    link.classList.remove("border-transparent");
+  } else {
+    link.classList.remove("border-black");
+    link.classList.add("border-transparent");
+  }
 });
 
 const hamburger = document.getElementById("hamburger") as HTMLElement | null;
@@ -38,15 +32,11 @@ if (hamburger) {
 }
 
 const authButtonsContainer = document.getElementById("authButtons");
-
-const name = localStorage.getItem("username"); // Get username from localStorage
-
+const name = localStorage.getItem("username");
 const createListingButton = document.getElementById("createListingButton");
 
-// Check if the user is logged in
 if (name && createListingButton) {
-  // If logged in, display the Create Listing button
-  createListingButton.classList.remove("hidden");
+  createListingButton.classList.remove("hidden"); // Show Create Listing button
 }
 
 if (authButtonsContainer) {
@@ -84,34 +74,40 @@ if (authButtonsContainer) {
     // Fetch credits for the logged-in user
     updateUserCredits(name); // Call with the actual username
   } else {
-    // If the user is not logged in (no username in localStorage)
-
-    // Create register button
+    // If not logged in, show login and register buttons
     const registerButton = document.createElement("a");
     registerButton.href = "/auth/register/";
     registerButton.className =
       "py-[5px] px-[25px] border-[3px] border-black bg-black rounded-[5px] text-[17px] font-normal cursor-pointer text-white no-underline";
     registerButton.innerText = "Register";
 
-    // Create login button
     const loginButton = document.createElement("a");
     loginButton.href = "/auth/login/";
     loginButton.className =
       "py-[5px] px-[25px] border-[3px] border-black rounded-[5px] text-[17px] font-normal cursor-pointer bg-white no-underline text-black";
     loginButton.innerText = "Login";
 
-    // Append register and login buttons to the container
     authButtonsContainer.appendChild(registerButton);
     authButtonsContainer.appendChild(loginButton);
   }
 }
 
 let page = 1;
-const limit = 6;
+const limit = 3;
 
-async function initializeAuctionPage() {
-  const name = localStorage.getItem("username");
+async function initializeHomePage() {
   try {
+    const postsResponse = await readProfiles({ limit, page });
+    renderPosts(postsResponse.data || []);
+    updatePaginationControls(
+      postsResponse.meta,
+      page,
+      limit,
+      readProfiles,
+      "paginationControls",
+      renderPosts
+    );
+
     const liveGridResponse = await liveGridreadProfiles({ limit, page });
     liveGridrenderPosts(liveGridResponse.data || []);
     updatePaginationControls(
@@ -122,31 +118,12 @@ async function initializeAuctionPage() {
       "liveGridpaginationControls",
       liveGridrenderPosts
     );
-
-    // Fetch and render winning posts
-    if (name) {
-      // Ensure name is defined before calling winGridreadProfiles
-      const winGridResponse = await winGridreadProfiles({ name, limit, page }); // Pass name as a string
-      winGridrenderPosts(winGridResponse.data || []);
-      updatePaginationControls(
-        winGridResponse.meta,
-        page,
-        limit,
-        (params) => winGridreadProfiles({ ...params, name }),
-        "winGridpaginationControls",
-        winGridrenderPosts // Use correct render function for winning posts
-      );
-    } else {
-      console.warn(
-        "No username found in localStorage. Skipping winnings section."
-      );
-    }
   } catch (error) {
     console.error("Error initializing homepage:", error);
   }
 }
 
-initializeAuctionPage();
+initializeHomePage();
 
 // Select DOM elements for both desktop and mobile search bars
 const desktopSearchInput = document.getElementById(

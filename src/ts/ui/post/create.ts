@@ -7,8 +7,8 @@ interface Media {
 
 interface PostData {
   title: string;
-  media: Media[]; // Array of Media objects
-  body: string;
+  media: Media[];
+  description: string;
   endsAt: string;
 }
 
@@ -56,7 +56,7 @@ export async function onCreatePost(event: SubmitEvent): Promise<void> {
         alt: `Image for ${titleInput.value.trim()}`, // Use title for alt text
       },
     ],
-    body: bodyInput.value.trim(),
+    description: bodyInput.value.trim(),
     endsAt: new Date(endsAtInput.value).toISOString(), // Convert to ISO format
   };
 
@@ -86,13 +86,4 @@ export async function onCreatePost(event: SubmitEvent): Promise<void> {
     loadingSpinner.style.display = "none"; // Hide loading spinner
     submitButton.disabled = false; // Re-enable submit button
   }
-}
-
-// Attach the event listener to the form
-const form = document.forms.namedItem("createPost") as HTMLFormElement | null;
-
-if (form) {
-  form.addEventListener("submit", onCreatePost);
-} else {
-  console.error("Form with name 'createPost' not found");
 }

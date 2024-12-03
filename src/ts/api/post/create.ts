@@ -9,7 +9,7 @@ interface Media {
 interface PostData {
   title: string;
   media: Media[]; // Array of Media objects
-  body: string;
+  description: string;
   endsAt: string;
 }
 

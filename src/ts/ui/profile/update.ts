@@ -128,5 +128,3 @@ export async function onUpdateProfile() {
   // Initially fetch and populate the profile data
   fetchProfileData();
 }
-
-onUpdateProfile(); // Call the function to start the process
